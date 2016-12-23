@@ -1,0 +1,48 @@
+<header>
+
+  <h1>Todo List ( {{$ctrl.incompleteCount}} )</h1>
+
+  <label class="hide-completed">
+    <input type="checkbox" ng-model="$ctrl.hideCompleted"/>
+    Hide Completed Tasks
+  </label>
+
+  <login-buttons></login-buttons>
+
+  <!--Form to create new task-->
+  <form class="new-task" ng-submit="$ctrl.addTask($ctrl.newTask)" ng-show="$ctrl.currentUser">
+		<input ng-model="$ctrl.newTask" type="text" name="text" placeholder="Type to add new tasks"/>
+  </form>
+</header>
+ 
+<ul>
+	<li ng-repeat="task in $ctrl.tasks" ng-class="{'checked': task.checked}"> <!--ng-class='OBJECT' takes in {key: value} where key = name of class and value = a boolean-->
+
+		<!--Delete Button-->
+		<button class="delete" ng-if="$ctrl.isOwner(task)" ng-click="$ctrl.removeTask(task)"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+
+		<!--Checkbox-->
+		<input type="checkbox" ng-checked="task.checked" ng-click="$ctrl.setChecked(task)" class="toggle-checked"/>
+			
+		<!--Edit Button-->
+		<button class="edit" ng-if="$ctrl.isOwner(task)" ng-click="$ctrl.toggleEdit(task)"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+
+		<!--Form to edit current task-->
+	  <form class="edit-task" ng-if="task.is_edit" ng-submit="$ctrl.editTask(task, task.text)">
+			<input ng-model="task.text" type="text" name="text"/>
+		</form>
+
+		<!--Display task-->
+		<span class="text" ng-if="!task.is_edit">
+		  <b>{{task.text}}</b>
+		</span>
+
+	  <!--Task info-->
+		<div>
+			<span class="info"><span class="title">Created by:</span> {{task.username}}</span>
+			<span class="info"><span class="title">Created on:</span> {{task.createdAt}}</span>
+			<span class="info" ng-if="task.updatedAt"><span class="title">Updated at:</span> {{task.updatedAt}}</span>
+		</div>
+
+  </li>
+</ul>
