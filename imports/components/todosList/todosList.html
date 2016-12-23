@@ -16,16 +16,17 @@
 </header>
  
 <ul>
-	<li ng-repeat="task in $ctrl.tasks" ng-class="{'checked': task.checked}"> <!--ng-class='OBJECT' takes in {key: value} where key = name of class and value = a boolean-->
+	<li ng-repeat="task in $ctrl.tasks" ng-class="{'checked': task.checked, 'private': task.private}"> 
+	<!--ng-class='OBJECT' takes in {key: value} where key = name of class and value = a boolean-->
 
 		<!--Delete Button-->
-		<button class="delete" ng-if="$ctrl.isOwner(task)" ng-click="$ctrl.removeTask(task)"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+		<button class="delete" ng-show="task.owner === $ctrl.currentUser._id" ng-click="$ctrl.removeTask(task)"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+
+		<!--Edit Button-->
+		<button class="edit" ng-show="task.owner === $ctrl.currentUser._id" ng-click="$ctrl.toggleEdit(task)"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
 
 		<!--Checkbox-->
 		<input type="checkbox" ng-checked="task.checked" ng-click="$ctrl.setChecked(task)" class="toggle-checked"/>
-			
-		<!--Edit Button-->
-		<button class="edit" ng-if="$ctrl.isOwner(task)" ng-click="$ctrl.toggleEdit(task)"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
 
 		<!--Form to edit current task-->
 	  <form class="edit-task" ng-if="task.is_edit" ng-submit="$ctrl.editTask(task, task.text)">
@@ -36,6 +37,11 @@
 		<span class="text" ng-if="!task.is_edit">
 		  <b>{{task.text}}</b>
 		</span>
+
+		<!--Privatize tasks-->
+		<button class="toggle-private" ng-click="$ctrl.setPrivate(task)" ng-show="task.owner === $ctrl.currentUser._id">
+			{{task.private == true ? "Private" : "Public"}}
+		</button>
 
 	  <!--Task info-->
 		<div>
