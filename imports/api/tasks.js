@@ -43,10 +43,10 @@ Meteor.methods({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		if (task.owner !== Meteor.userId()) {
+		/*if (task.owner !== Meteor.userId()) {
 			// If task is private, only owner can delete
 			throw new Meteor.Error('not-authorized');
-		}
+		}*/
 
 		Tasks.remove(taskId);
 	},
