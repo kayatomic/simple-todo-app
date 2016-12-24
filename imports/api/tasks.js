@@ -9,13 +9,7 @@ if (Meteor.isServer) {
 	// Only publish tasks that are public or belong to the current user
 	Meteor.publish('tasks', function tasksPublication() {
 		return Tasks.find({
-			$or: [{
-				private: {
-					$ne: true
-				}
-			}, {
-				owner: this.userId
-			}, ],
+			$or: [{private: {$ne: true}}, {owner: this.userId}],
 		});
 	});
 }
@@ -41,6 +35,19 @@ Meteor.methods({
 	'tasks.remove' (taskId) {
 		check(taskId, String);
 
+		// This code snippet is taken from guide section 10.9
+		// Don't really need this since I already hid the delete button from non-owners
+		const task = Tasks.findOne(taskId);
+		if (task.private && task.owner !== Meteor.userId()) {
+			// If task is private, only owner can delete
+			throw new Meteor.Error('not-authorized');
+		}
+
+		if (task.owner !== Meteor.userId()) {
+			// If task is private, only owner can delete
+			throw new Meteor.Error('not-authorized');
+		}
+
 		Tasks.remove(taskId);
 	},
 
@@ -65,6 +72,12 @@ Meteor.methods({
 	'tasks.setChecked' (taskId, setChecked) {
 		check(taskId, String);
 		check(setChecked, Boolean);
+
+		const task = Tasks.findOne(taskId);
+		if (task.private && task.owner !== Meteor.userId()) {
+			// If task is private, only owner can check it off
+			throw new Meteor.Error('not-authorized');
+		}
 
 		Tasks.update(taskId, {
 			$set: {
